@@ -1,29 +1,40 @@
 import React, {Component, useEffect, useState} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import {Row, Col, Image, ListGroup, Button, Card} from "react-bootstrap";
 
 /* My Components */
 import Rating from "../components/Rating";
-import {useDispatch, useSelector} from "react-redux";
-import {listDetails, listProducts} from "../redux/actions/productActions";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import Product from "../components/Product";
+import {Qty} from "../components/Qty";
+
+// Redux
+import {useDispatch, useSelector} from "react-redux";
+import {fetchSingleProduct} from "../store/productList";
 
 
 function ProductScreen() {
-    /* Get ID from URL*/
+    /* Get id from URL*/
     let {id} = useParams();
+    const navigate = useNavigate();
+
+    // Redux
     const dispatch = useDispatch()
-    const productDetails = useSelector(state => state.productDetails)
-    const {error, loading, product} = productDetails
+    const product = useSelector(state => state.productList.product)
+    const error = useSelector((state) => state.productList.error)
+    const loading = useSelector((state) => state.productList.loading)
+
+    let qtyCart = 0
 
     useEffect(() => {
-        dispatch(listDetails(id))
-    }, [dispatch, id])
+        dispatch(fetchSingleProduct(id))
+    },[dispatch])
 
+    const addToCartHandler = (id) => {
+        navigate(`/cart/${id}?qty=`)
+    }
 
-    /* Find over array product that match with ID from URL and set to `product` */
+    /* Find over array product that match with id from URL and set to `product` */
     return (
 
         <div>
@@ -71,8 +82,13 @@ function ProductScreen() {
                                                 <Col>{product.count_in_stock > 0 ? 'In stock' : 'Out of stock'}</Col>
                                             </Row>
                                         </ListGroup.Item>
+
+                                        <Qty productCount={product.count_in_stock} id={id}/>
+
                                         <ListGroup.Item>
-                                            <Button className="btn-block" type="button"
+                                            <Button className="btn-block"
+                                                    type="button"
+                                                    onClick={() => addToCartHandler(id)}
                                                     disabled={product.count_in_stock == 0}>
                                                 Add to Cart</Button>
                                         </ListGroup.Item>
@@ -82,10 +98,8 @@ function ProductScreen() {
                         )
             }
 
-
         </div>
     )
-        ;
 }
 
 export default ProductScreen;
