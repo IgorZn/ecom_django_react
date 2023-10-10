@@ -30,25 +30,20 @@ const initialState = {
     products: [],
     product: {},
     loading: false,
-    error: null
+    error: null,
+    cartQty: {}
 }
 
 export const productListSlice = createSlice({
     name: 'productList',
     initialState,
     reducers: {
-        // product_list_req: (state) => {
-        //     state.loading = false
-        // },
-        // product_list_success: async (state, action) => {
-        //     state.loading = true
-        //     const {data} = await axios.get(API_PRODUCTS, {headers})
-        //     state.products.push(...data)
-        // },
-        // product_list_fail: (state, action) => {
-        //     state.loading = false
-        //     state.error = action.payload.error
-        // },
+        addQtyCart: (state, action) => {
+            state.cartQty[action.payload.id] = action.payload.qty
+        },
+        removeQtyCart: (state, action) => {
+            state.cartQty[action.payload.id] = action.payload.qty
+        },
     },
     extraReducers:
         (builder) => {
@@ -83,6 +78,6 @@ export const productListSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const {product_list_req, product_list_success, product_list_fail} = productListSlice.actions
+export const {addQtyCart, removeQtyCart } = productListSlice.actions
 
 export default productListSlice.reducer

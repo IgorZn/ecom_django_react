@@ -2,7 +2,7 @@ import React, {Component, useState} from 'react';
 import {Button, Row, Col} from 'react-bootstrap';
 
 import {useDispatch, useSelector} from "react-redux";
-import {addQtyCart, removeQtyCart} from "../redux/actions/productActions";
+import {addQtyCart, removeQtyCart} from "../store/productList";
 
 
 export const Qty = ({productCount, id}) => {
@@ -10,18 +10,23 @@ export const Qty = ({productCount, id}) => {
 
 
     const dispatch = useDispatch()
-    const cartQty = useSelector(state => state.cartQty)
+    const { cartQty } = useSelector(state => state.productList)
 
-    const addQty = (qty) => {
-        dispatch(addQtyCart(qty))
+    const addQty = ({id, count}) => {
+        dispatch(addQtyCart({id, qty: count}))
+    }
+
+    const decrQty = ({id, count}) => {
+        dispatch(removeQtyCart({id, qty: count}))
     }
 
     const addCount = () => {
       if (count === productCount) {
           count = productCount
       } else {
-          setCount(count + 1)
-          addQty({qty: 1, id})
+          count += 1
+          setCount(count)
+          addQty({id, count})
       }
     }
 
@@ -29,7 +34,9 @@ export const Qty = ({productCount, id}) => {
       if (count === 0) {
           count = 0
       } else {
-          setCount(count - 1)
+          count -= 1
+          setCount(count)
+          decrQty({id, count})
       }
     }
 
