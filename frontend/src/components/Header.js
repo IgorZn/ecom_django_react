@@ -6,7 +6,7 @@ class Header extends Component {
     render() {
         return (
             <header>
-                <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+                <nav className="navbar navbar-expand-md navbar-dark bg-dark">
                     <Container>
                         <LinkContainer to="/">
                             <a className="navbar-brand">ProShop</a>

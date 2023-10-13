@@ -2,6 +2,9 @@ import React, {Component, useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 import {Row, Col, Image, ListGroup, Button, Card} from "react-bootstrap";
 
+// My hooks
+import {useLocalStorage} from "../hooks/useLocalStorage";
+
 /* My Components */
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
@@ -18,20 +21,25 @@ function ProductScreen() {
     let {id} = useParams();
     const navigate = useNavigate();
 
+    // Local Storage
+    const [order, setOrder] = useLocalStorage([], 'order')
+
     // Redux
     const dispatch = useDispatch()
-    const product = useSelector(state => state.productList.product)
-    const error = useSelector((state) => state.productList.error)
-    const loading = useSelector((state) => state.productList.loading)
+    const {product, error, loading, cartQty} = useSelector(state => state.productList)
 
-    let qtyCart = 0
 
     useEffect(() => {
         dispatch(fetchSingleProduct(id))
-    },[dispatch])
+    }, [dispatch])
 
     const addToCartHandler = (id) => {
-        navigate(`/cart/${id}?qty=`)
+        const newItem = order.find(item => item.id === Number(id))
+        if (!newItem) {
+            setOrder([...order, product])
+        }
+
+        // navigate(`/cart/${id}?qty=`)
     }
 
     /* Find over array product that match with id from URL and set to `product` */
@@ -82,16 +90,17 @@ function ProductScreen() {
                                                 <Col>{product.count_in_stock > 0 ? 'In stock' : 'Out of stock'}</Col>
                                             </Row>
                                         </ListGroup.Item>
-
-                                        <Qty productCount={product.count_in_stock} id={id}/>
+                                        {product.count_in_stock > 0 ?
+                                            <Qty productCount={product.count_in_stock} id={id}/> : ''}
 
                                         <ListGroup.Item>
                                             <Button className="btn-block"
                                                     type="button"
                                                     onClick={() => addToCartHandler(id)}
-                                                    disabled={product.count_in_stock == 0}>
+                                                    disabled={cartQty[`${id}`] == undefined || cartQty[`${id}`] == 0 ? true : false}>
                                                 Add to Cart</Button>
                                         </ListGroup.Item>
+
                                     </ListGroup>
                                 </Col>
                             </Row>

@@ -9,10 +9,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {fetchProducts} from "../store/productList";
 
 function HomeScreen() {
-    const products = useSelector((state) => state.productList.products)
-    const error = useSelector((state) => state.productList.error)
-    const loading = useSelector((state) => state.productList.loading)
-
+    const {products, error, loading} = useSelector((state) => state.productList)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -27,8 +24,8 @@ function HomeScreen() {
                 loading ? <Loader/>
                     : error ? <Message message={error}/>
                         : <Row>
-                            {products.map(item => (
-                                <Col key={item.id} sm={12} md={6} lg={4} xl={3}>
+                            {products.map((item, index) => (
+                                <Col key={index} sm={12} md={6} lg={4} xl={3}>
                                     <Product product={item}/>
                                 </Col>
                             ))}

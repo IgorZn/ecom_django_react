@@ -66,7 +66,6 @@ export const productListSlice = createSlice({
                 state.loading = true
             })
             .addCase(fetchSingleProduct.fulfilled, (state, action) => {
-                console.log('fetchSingleProduct.fulfilled>>', action.payload)
                 state.loading = false
                 state.product = action.payload
             })

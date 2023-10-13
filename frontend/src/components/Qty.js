@@ -6,11 +6,11 @@ import {addQtyCart, removeQtyCart} from "../store/productList";
 
 
 export const Qty = ({productCount, id}) => {
-    let [count, setCount] = useState(0)
-
-
     const dispatch = useDispatch()
     const { cartQty } = useSelector(state => state.productList)
+
+
+    let [count, setCount] = useState(cartQty[id] || 0)
 
     const addQty = ({id, count}) => {
         dispatch(addQtyCart({id, qty: count}))
