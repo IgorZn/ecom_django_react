@@ -23,6 +23,9 @@ function ProductScreen() {
 
     // Local Storage
     const [order, setOrder] = useLocalStorage([], 'order')
+    const [qty, setQty] = useLocalStorage([], 'qty')
+
+    const q = JSON.parse(localStorage.getItem('qty'))
 
     // Redux
     const dispatch = useDispatch()
@@ -35,11 +38,33 @@ function ProductScreen() {
 
     const addToCartHandler = (id) => {
         const newItem = order.find(item => item.id === Number(id))
+
         if (!newItem) {
             setOrder([...order, product])
         }
 
-        // navigate(`/cart/${id}?qty=`)
+        // Clean up from null
+        const q = qty.filter(el => el !== null)
+
+        // If already exist upd value (qty)
+        q.forEach(el => {
+            if (Object.keys(el).includes(id)) {
+                el[id] = cartQty[id]
+            }
+        })
+        const storeOut = [...q]
+        for (const [key, val] of Object.entries(cartQty)) {
+            // if new add to storeOut
+            if (!storeOut.find(el => Object.keys(el).includes(key))) {
+                storeOut.push(Object.fromEntries([[key, val]]))
+            }
+        }
+
+        // Place to store
+        setQty([...storeOut])
+
+        setTimeout(navigate, 50, `/cart/${id}?qty=`)
+
     }
 
     /* Find over array product that match with id from URL and set to `product` */
@@ -93,7 +118,7 @@ function ProductScreen() {
                                         {product.count_in_stock > 0 ?
                                             <Qty productCount={product.count_in_stock} id={id}/> : ''}
 
-                                        <ListGroup.Item>
+                                        <ListGroup.Item className="d-grid">
                                             <Button className="btn-block"
                                                     type="button"
                                                     onClick={() => addToCartHandler(id)}
