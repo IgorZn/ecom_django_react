@@ -14,6 +14,7 @@ import {Qty} from "../components/Qty";
 // Redux
 import {useDispatch, useSelector} from "react-redux";
 import {fetchSingleProduct} from "../store/productList";
+import {addQtyAndGetReadyStore, getQtyInitValue} from "../utils/cartUtils";
 
 
 function ProductScreen() {
@@ -25,7 +26,7 @@ function ProductScreen() {
     const [order, setOrder] = useLocalStorage([], 'order')
     const [qty, setQty] = useLocalStorage([], 'qty')
 
-    const q = JSON.parse(localStorage.getItem('qty'))
+    const qtyCount = getQtyInitValue(qty, id)
 
     // Redux
     const dispatch = useDispatch()
@@ -34,7 +35,7 @@ function ProductScreen() {
 
     useEffect(() => {
         dispatch(fetchSingleProduct(id))
-    }, [dispatch])
+    }, [])
 
     const addToCartHandler = (id) => {
         const newItem = order.find(item => item.id === Number(id))
@@ -43,25 +44,10 @@ function ProductScreen() {
             setOrder([...order, product])
         }
 
-        // Clean up from null
-        const q = qty.filter(el => el !== null)
+        // const storeOut = addQtyAndGetReadyStore(id, qty, cartQty)
 
-        // If already exist upd value (qty)
-        q.forEach(el => {
-            if (Object.keys(el).includes(id)) {
-                el[id] = cartQty[id]
-            }
-        })
-        const storeOut = [...q]
-        for (const [key, val] of Object.entries(cartQty)) {
-            // if new add to storeOut
-            if (!storeOut.find(el => Object.keys(el).includes(key))) {
-                storeOut.push(Object.fromEntries([[key, val]]))
-            }
-        }
-
-        // Place to store
-        setQty([...storeOut])
+        // // Place to store
+        // setQty([...storeOut])
 
         setTimeout(navigate, 50, `/cart/${id}?qty=`)
 
@@ -74,7 +60,7 @@ function ProductScreen() {
             <Link to="/" className="btn btn-light my-3">Go Back</Link>
             {
                 loading ? <Loader/>
-                    : error ? <Message message={error}/>
+                    : error ? <Message message={error} variant='info'/>
                         : (
                             <Row>
                                 <Col md="6">
@@ -116,13 +102,13 @@ function ProductScreen() {
                                             </Row>
                                         </ListGroup.Item>
                                         {product.count_in_stock > 0 ?
-                                            <Qty productCount={product.count_in_stock} id={id}/> : ''}
+                                            <Qty productCount={product} id={id}/> : ''}
 
                                         <ListGroup.Item className="d-grid">
                                             <Button className="btn-block"
                                                     type="button"
                                                     onClick={() => addToCartHandler(id)}
-                                                    disabled={cartQty[`${id}`] == undefined || cartQty[`${id}`] == 0 ? true : false}>
+                                                    disabled={cartQty[`${id}`] == undefined || qtyCount == 0 || cartQty[`${id}`] == 0 ? true : false}>
                                                 Add to Cart</Button>
                                         </ListGroup.Item>
 

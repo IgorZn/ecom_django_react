@@ -3,14 +3,25 @@ import {Button, Row, Col} from 'react-bootstrap';
 
 import {useDispatch, useSelector} from "react-redux";
 import {addQtyCart, removeQtyCart} from "../store/productList";
+import {useLocalStorage} from "../hooks/useLocalStorage";
+import {addQtyAndGetReadyStore, getQtyInitValue} from "../utils/cartUtils";
 
 
-export const Qty = ({productCount, id}) => {
+export const Qty = ({productCount, id, localStoreQty}) => {
     const dispatch = useDispatch()
-    const { cartQty } = useSelector(state => state.productList)
+    const {cartQty} = useSelector(state => state.productList)
+
+    // Local Storage
+    const [qty, setQty] = useLocalStorage([], 'qty')
+
+    const qtyCount = getQtyInitValue(qty, id)
+    let [count, setCount] = useState(cartQty[id] || qtyCount[id] || 0)
 
 
-    let [count, setCount] = useState(cartQty[id] || 0)
+    useEffect(() => {
+        const q = addQtyAndGetReadyStore(id, qty, count)
+        setQty(q)
+    }, [count]);
 
     const addQty = ({id, count}) => {
         dispatch(addQtyCart({id, qty: count}))
@@ -21,23 +32,23 @@ export const Qty = ({productCount, id}) => {
     }
 
     const addCount = () => {
-      if (count === productCount) {
-          count = productCount
-      } else {
-          count += 1
-          setCount(count)
-          addQty({id, count})
-      }
+        if (count === productCount.count_in_stock) {
+            count = productCount.count_in_stock
+        } else {
+            count += 1
+            setCount(count)
+            addQty({id, count})
+        }
     }
 
     const getCount = () => {
-      if (count === 0) {
-          count = 0
-      } else {
-          count -= 1
-          setCount(count)
-          decrQty({id, count})
-      }
+        if (count === 0) {
+            count = 0
+        } else {
+            count -= 1
+            setCount(count)
+            decrQty({id, count})
+        }
     }
 
     return (

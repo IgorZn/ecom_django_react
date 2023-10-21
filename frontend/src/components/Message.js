@@ -5,12 +5,15 @@ class Message extends Component {
     constructor(props) {
         super(props);
     }
+
     render() {
         const message = this.props.message
+        const variant = this.props.variant
+        const extra = this.props.extra
         return (
             <div>
-                <Alert key="warning" variant="warning">
-                    {message}
+                <Alert key={variant} variant={variant}>
+                    {message} {extra}
                 </Alert>
             </div>
         );
