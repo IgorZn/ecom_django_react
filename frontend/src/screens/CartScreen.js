@@ -39,7 +39,7 @@ const CartScreen = () => {
                     </Message>
                 ) : (
                     <ListGroup variant='flush'>
-                        {cartItems.map( (item, index) => (
+                        {cartItems.map((item, index) => (
                             <ListGroup.Item key={index}>
                                 <Row>
                                     <Col md={2}>

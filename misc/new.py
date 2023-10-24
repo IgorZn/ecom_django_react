@@ -7,6 +7,7 @@ def rev():
             break
 
         letter = input[_]
+        print('index:', _, 'current:', letter, 'last:', input[(len(input) - 1) - _])
         input[_] = input[(len(input) - 1) - _]
         input[(len(input) - 1) - _] = letter
 

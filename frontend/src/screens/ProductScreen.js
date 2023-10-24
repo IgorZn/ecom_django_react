@@ -14,7 +14,7 @@ import {Qty} from "../components/Qty";
 // Redux
 import {useDispatch, useSelector} from "react-redux";
 import {fetchSingleProduct} from "../store/productList";
-import {addQtyAndGetReadyStore, getQtyInitValue} from "../utils/cartUtils";
+import {addQtyAndGetReadyStore, addToCartStatus, getQtyInitValue, useButtonStatus} from "../utils/cartUtils";
 
 
 function ProductScreen() {
@@ -25,17 +25,22 @@ function ProductScreen() {
     // Local Storage
     const [order, setOrder] = useLocalStorage([], 'order')
     const [qty, setQty] = useLocalStorage([], 'qty')
-
-    const qtyCount = getQtyInitValue(qty, id)
+    const qtyCountLS = getQtyInitValue(qty, id)
+    const [btnValue, setBtnStatus ] = useButtonStatus(qtyCountLS, id)
 
     // Redux
     const dispatch = useDispatch()
     const {product, error, loading, cartQty} = useSelector(state => state.productList)
 
-
     useEffect(() => {
         dispatch(fetchSingleProduct(id))
     }, [])
+
+    useEffect(() => {
+        setBtnStatus(qtyCountLS[id] > 0 ? false : true)
+        setBtnStatus(cartQty[id] > 0 ? false : true)
+    }, [cartQty]);
+
 
     const addToCartHandler = (id) => {
         const newItem = order.find(item => item.id === Number(id))
@@ -43,11 +48,6 @@ function ProductScreen() {
         if (!newItem) {
             setOrder([...order, product])
         }
-
-        // const storeOut = addQtyAndGetReadyStore(id, qty, cartQty)
-
-        // // Place to store
-        // setQty([...storeOut])
 
         setTimeout(navigate, 50, `/cart/${id}?qty=`)
 
@@ -108,7 +108,7 @@ function ProductScreen() {
                                             <Button className="btn-block"
                                                     type="button"
                                                     onClick={() => addToCartHandler(id)}
-                                                    disabled={cartQty[`${id}`] == undefined || qtyCount == 0 || cartQty[`${id}`] == 0 ? true : false}>
+                                                    disabled={btnValue}>
                                                 Add to Cart</Button>
                                         </ListGroup.Item>
 
