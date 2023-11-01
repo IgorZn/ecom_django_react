@@ -36,7 +36,7 @@ export const getQtyInitValue = (qtyLocalStorage, id) => {
     if (qtyLocalStorage.length === 0) {
         qtyCount = 0
     } else {
-        qtyCount = qtyLocalStorage.find(item => Object.keys(item).includes(id)) || 0
+        qtyCount = qtyLocalStorage.find(item => Object.keys(item).includes(id.toString())) || 0
     }
 
     return qtyCount
@@ -60,6 +60,7 @@ export const addToCartStatus = (localStorageQty, stateQty, id) => {
 }
 
 export const useButtonStatus = (count, id) => {
-    const [buttonStatus, setButtonStatus] = useState(count[id] > 0 ? false : true);
+    const status = count[id] > 0 ? false : true
+    const [buttonStatus, setButtonStatus] = useState(status);
     return [buttonStatus, setButtonStatus]
 }

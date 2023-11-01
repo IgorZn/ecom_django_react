@@ -31,7 +31,8 @@ const initialState = {
     product: {},
     loading: false,
     error: null,
-    cartQty: {}
+    cartQty: {},
+    qtyCartLocal: null
 }
 
 export const productListSlice = createSlice({
@@ -44,39 +45,45 @@ export const productListSlice = createSlice({
         removeQtyCart: (state, action) => {
             state.cartQty[action.payload.id] = action.payload.qty
         },
+        getLocalStorage: (state, action) => {
+            console.log('getLocalStorage>>>>', action.payload.q)
+            state.qtyCartLocal = action.payload.q
+            console.log('state.cartQtyLocal>>>', state.qtyCartLocal)
+
+        }
     },
     extraReducers:
         (builder) => {
-        builder
-            // List Product
-            .addCase(fetchProducts.pending, (state) => {
-                state.loading = true
-            })
-            .addCase(fetchProducts.fulfilled, (state, action) => {
-                state.loading = false
-                state.products.push(...action.payload)
-            })
-            .addCase(fetchProducts.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.error.message
-            })
+            builder
+                // List Product
+                .addCase(fetchProducts.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(fetchProducts.fulfilled, (state, action) => {
+                    state.loading = false
+                    state.products.push(...action.payload)
+                })
+                .addCase(fetchProducts.rejected, (state, action) => {
+                    state.loading = false
+                    state.error = action.error.message
+                })
 
-            // Single Product
-            .addCase(fetchSingleProduct.pending, (state, action) => {
-                state.loading = true
-            })
-            .addCase(fetchSingleProduct.fulfilled, (state, action) => {
-                state.loading = false
-                state.product = action.payload
-            })
-            .addCase(fetchSingleProduct.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.error.message
-            })
-    },
+                // Single Product
+                .addCase(fetchSingleProduct.pending, (state, action) => {
+                    state.loading = true
+                })
+                .addCase(fetchSingleProduct.fulfilled, (state, action) => {
+                    state.loading = false
+                    state.product = action.payload
+                })
+                .addCase(fetchSingleProduct.rejected, (state, action) => {
+                    state.loading = false
+                    state.error = action.error.message
+                })
+        },
 })
 
 // Action creators are generated for each case reducer function
-export const {addQtyCart, removeQtyCart } = productListSlice.actions
+export const {addQtyCart, removeQtyCart, getLocalStorage} = productListSlice.actions
 
 export default productListSlice.reducer

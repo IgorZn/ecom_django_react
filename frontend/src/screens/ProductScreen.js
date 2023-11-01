@@ -26,7 +26,7 @@ function ProductScreen() {
     const [order, setOrder] = useLocalStorage([], 'order')
     const [qty, setQty] = useLocalStorage([], 'qty')
     const qtyCountLS = getQtyInitValue(qty, id)
-    const [btnValue, setBtnStatus ] = useButtonStatus(qtyCountLS, id)
+    const [btnValue, setBtnStatus] = useButtonStatus(qtyCountLS, id)
 
     // Redux
     const dispatch = useDispatch()
@@ -38,7 +38,12 @@ function ProductScreen() {
 
     useEffect(() => {
         setBtnStatus(qtyCountLS[id] > 0 ? false : true)
-        setBtnStatus(cartQty[id] > 0 ? false : true)
+    }, [cartQty]);
+
+    useEffect(() => {
+        if (cartQty[id] > 0) {
+            setBtnStatus(cartQty[id] > 0 ? false : true)
+        }
     }, [cartQty]);
 
 
